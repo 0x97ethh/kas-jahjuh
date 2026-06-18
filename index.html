@@ -3,666 +3,482 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💰 KAS JAH-JUH — Buku Kas Komunitas</title>
-  <meta name="description" content="Aplikasi kas komunitas JAH-JUH untuk mengelola keuangan">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+  <title>BUKU KAS JAH-JUH</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; background: #0a0a0f; }
     .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
     .gradient-text { background: linear-gradient(135deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .input-cell { 
+      background: rgba(255,255,255,0.05); 
+      border: 1px solid rgba(255,255,255,0.1); 
+      color: white; 
+      text-align: center;
+      padding: 8px 4px;
+      width: 100%;
+      font-size: 13px;
+    }
+    .input-cell:focus { 
+      border-color: #e50914; 
+      outline: none; 
+      box-shadow: 0 0 0 2px rgba(229,9,20,0.2); 
+    }
+    .input-cell.has-value {
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.3);
+    }
+    .month-header { 
+      background: linear-gradient(135deg, #e50914, #ff4444);
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      padding: 12px 8px;
+      min-width: 100px;
+    }
+    .member-row:hover { background: rgba(255,255,255,0.03); }
+    .total-cell {
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      color: #60a5fa;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 4px;
+    }
+    .total-row { background: rgba(59,130,246,0.05); }
     .btn-primary { background: linear-gradient(135deg, #e50914, #ff4444); }
     .btn-primary:hover { background: linear-gradient(135deg, #ff4444, #e50914); transform: translateY(-1px); }
-    .input-field { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; }
-    .input-field:focus { border-color: #e50914; outline: none; box-shadow: 0 0 0 2px rgba(229,9,20,0.2); }
-    .table-row:hover { background: rgba(255,255,255,0.03); }
-    .tab-active { background: #e50914; color: white; }
-    .fade-in { animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    ::-webkit-scrollbar { width: 6px; }
+    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .btn-success:hover { background: linear-gradient(135deg, #16a34a, #22c55e); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #1a1a2e; }
     ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 3px; }
+    .table-container { overflow-x: auto; }
+    .fixed-header { position: sticky; top: 0; z-index: 10; }
+    .fixed-col { 
+      position: sticky; 
+      left: 0; 
+      z-index: 5; 
+      background: #0a0a0f;
+    }
+    .fixed-col-2 { 
+      position: sticky; 
+      left: 50px; 
+      z-index: 5; 
+      background: #0a0a0f;
+    }
+    .month-total { 
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.2);
+      color: #fbbf24;
+      font-weight: 700;
+    }
+    .badge { padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,0.2); color: #4ade80; }
+    .badge-yellow { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    @media print {
+      body { background: white; color: black; }
+      .no-print { display: none; }
+      .glass { background: white; border: 1px solid #ccc; }
+      .input-cell { border: 1px solid #ccc; color: black; background: white; }
+      .month-header { background: #e50914; }
+    }
   </style>
 </head>
 <body class="text-white min-h-screen">
   <!-- Header -->
   <header class="glass sticky top-0 z-50 border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <span class="text-2xl">💰</span>
+        <span class="text-2xl">📒</span>
         <div>
-          <h1 class="font-bold text-lg">KAS <span class="text-red-500">JAH-JUH</span></h1>
-          <p class="text-xs text-zinc-500">Buku Kas Komunitas</p>
+          <h1 class="font-bold text-lg">BUKU KAS <span class="gradient-text">JAH-JUH</span></h1>
+          <p class="text-xs text-zinc-500">Kelompok Arisan & Simpan Pinjam</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <select id="yearFilter" class="input-field rounded-lg px-3 py-1.5 text-sm" onchange="renderAll()">
+      <div class="flex items-center gap-3 no-print">
+        <select id="yearSelect" class="input-cell rounded-lg px-3 py-1.5 text-sm w-auto" onchange="renderAll()">
           <option value="2026">2026</option>
           <option value="2025">2025</option>
         </select>
-        <button onclick="exportCSV()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10 transition-all">📥 Export</button>
+        <button onclick="exportToCSV()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10 transition-all">📥 Export CSV</button>
         <button onclick="window.print()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10 transition-all">🖨️ Cetak</button>
+        <button onclick="saveData()" class="btn-success px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">💾 Simpan</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
+  <main class="max-w-full px-4 py-6">
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 fade-in">
-      <div class="glass rounded-2xl p-5">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div class="glass rounded-2xl p-4">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-lg">👥</span>
-          <span class="text-sm text-zinc-400">Total Anggota</span>
+          <span class="text-xs text-zinc-400">Anggota</span>
         </div>
-        <div class="text-3xl font-black gradient-text" id="totalMembers">0</div>
+        <div class="text-2xl font-black gradient-text" id="totalMembers">28</div>
       </div>
-      <div class="glass rounded-2xl p-5">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">📥</span>
-          <span class="text-sm text-zinc-400">Total Pemasukan</span>
-        </div>
-        <div class="text-3xl font-black text-green-400" id="totalIncome">Rp 0</div>
-      </div>
-      <div class="glass rounded-2xl p-5">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">📤</span>
-          <span class="text-sm text-zinc-400">Total Pengeluaran</span>
-        </div>
-        <div class="text-3xl font-black text-red-400" id="totalExpense">Rp 0</div>
-      </div>
-      <div class="glass rounded-2xl p-5">
+      <div class="glass rounded-2xl p-4">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-lg">💰</span>
-          <span class="text-sm text-zinc-400">Saldo Kas</span>
+          <span class="text-xs text-zinc-400">Total Kas</span>
         </div>
-        <div class="text-3xl font-black text-blue-400" id="totalBalance">Rp 0</div>
+        <div class="text-2xl font-black text-green-400" id="totalKas">Rp 0</div>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-lg">✅</span>
+          <span class="text-xs text-zinc-400">Sudah Bayar</span>
+        </div>
+        <div class="text-2xl font-black text-blue-400" id="totalPaid">0</div>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-lg">⏳</span>
+          <span class="text-xs text-zinc-400">Belum Bayar</span>
+        </div>
+        <div class="text-2xl font-black text-yellow-400" id="totalUnpaid">0</div>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-lg">📊</span>
+          <span class="text-xs text-zinc-400">Per Bulan</span>
+        </div>
+        <div class="text-2xl font-black text-purple-400" id="avgPerMonth">Rp 0</div>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
-      <button onclick="switchTab('members')" id="tab-members" class="tab-btn tab-active px-5 py-2 rounded-full font-semibold text-sm transition-all">👥 Anggota</button>
-      <button onclick="switchTab('income')" id="tab-income" class="tab-btn px-5 py-2 rounded-full font-semibold text-sm bg-white/5 text-zinc-400 hover:bg-white/10 transition-all">📥 Pemasukan</button>
-      <button onclick="switchTab('expense')" id="tab-expense" class="tab-btn px-5 py-2 rounded-full font-semibold text-sm bg-white/5 text-zinc-400 hover:bg-white/10 transition-all">📤 Pengeluaran</button>
-      <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-5 py-2 rounded-full font-semibold text-sm bg-white/5 text-zinc-400 hover:bg-white/10 transition-all">📊 Laporan</button>
-    </div>
-
-    <!-- Members Tab -->
-    <div id="panel-members" class="tab-panel fade-in">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">👥 Daftar Anggota</h2>
-        <button onclick="showModal('memberModal')" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold transition-all">+ Tambah Anggota</button>
-      </div>
-      <div class="glass rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">No</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Nama</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Total Iuran</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="membersTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Income Tab -->
-    <div id="panel-income" class="tab-panel hidden fade-in">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">📥 Pemasukan</h2>
-        <button onclick="showModal('incomeModal')" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold transition-all">+ Tambah Pemasukan</button>
-      </div>
-      <div class="glass rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Tanggal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Anggota</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Keterangan</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Jumlah</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="incomeTable"></tbody>
-          </table>
-        </div>
+    <!-- Table -->
+    <div class="glass rounded-2xl overflow-hidden">
+      <div class="table-container">
+        <table class="w-full border-collapse" id="kasTable">
+          <thead>
+            <tr>
+              <th class="month-header fixed-col" style="min-width:50px">No</th>
+              <th class="month-header fixed-col-2" style="min-width:120px">Nama</th>
+              <th class="month-header" id="header-Mei">Mei</th>
+              <th class="month-header" id="header-Juni">Juni</th>
+              <th class="month-header" id="header-Juli">Juli</th>
+              <th class="month-header" id="header-Agustus">Agustus</th>
+              <th class="month-header" id="header-September">September</th>
+              <th class="month-header" id="header-Oktober">Oktober</th>
+              <th class="month-header" id="header-November">November</th>
+              <th class="month-header" id="header-Desember">Desember</th>
+              <th class="month-header" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">TOTAL</th>
+              <th class="month-header" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="kasBody">
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td class="total-cell fixed-col" colspan="2" style="text-align:left; padding-left:16px;">📊 TOTAL PER BULAN</td>
+              <td class="month-total" id="total-Mei">0</td>
+              <td class="month-total" id="total-Juni">0</td>
+              <td class="month-total" id="total-Juli">0</td>
+              <td class="month-total" id="total-Agustus">0</td>
+              <td class="month-total" id="total-September">0</td>
+              <td class="month-total" id="total-Oktober">0</td>
+              <td class="month-total" id="total-November">0</td>
+              <td class="month-total" id="total-Desember">0</td>
+              <td class="total-cell" id="grandTotal">0</td>
+              <td class="total-cell">-</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
 
-    <!-- Expense Tab -->
-    <div id="panel-expense" class="tab-panel hidden fade-in">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">📤 Pengeluaran</h2>
-        <button onclick="showModal('expenseModal')" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold transition-all">+ Tambah Pengeluaran</button>
-      </div>
-      <div class="glass rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Tanggal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Keterangan</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase">Jumlah</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="expenseTable"></tbody>
-          </table>
-        </div>
-      </div>
+    <!-- Quick Actions -->
+    <div class="flex flex-wrap gap-3 mt-6 no-print">
+      <button onclick="fillAllMonth()" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold transition-all">💰 Isi Semua Bulan Ini</button>
+      <button onclick="clearAllData()" class="glass px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-500/20 hover:border-red-500/50 transition-all">🗑️ Reset Data</button>
+      <button onclick="markAllPaid()" class="btn-success px-4 py-2 rounded-xl text-sm font-semibold transition-all">✅ Tandai Semua Lunas</button>
     </div>
 
-    <!-- Report Tab -->
-    <div id="panel-report" class="tab-panel hidden fade-in">
-      <h2 class="text-xl font-bold mb-4">📊 Laporan Bulanan</h2>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="glass rounded-2xl p-6">
-          <h3 class="font-semibold mb-4">📈 Grafik Pemasukan vs Pengeluaran</h3>
-          <canvas id="chartReport" height="200"></canvas>
-        </div>
-        <div class="glass rounded-2xl p-6">
-          <h3 class="font-semibold mb-4">📊 Rekap Bulanan</h3>
-          <div id="monthlyReport" class="space-y-3"></div>
-        </div>
-      </div>
+    <!-- Info -->
+    <div class="glass rounded-2xl p-4 mt-6 no-print">
+      <h3 class="font-semibold mb-2">ℹ️ Informasi</h3>
+      <ul class="text-sm text-zinc-400 space-y-1">
+        <li>• Klik sel untuk mengisi jumlah iuran</li>
+        <li>• Data tersimpan otomatis di browser (localStorage)</li>
+        <li>• Klik 💾 Simpan untuk backup data</li>
+        <li>• Export ke CSV untuk backup di Excel/Google Sheets</li>
+        <li>• Gunakan 🖨️ Cetak untuk print laporan</li>
+      </ul>
     </div>
   </main>
 
-  <!-- Modals -->
-  <div id="memberModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="glass rounded-2xl p-6 w-full max-w-md">
-      <h3 class="text-xl font-bold mb-4">✏️ <span id="memberModalTitle">Tambah Anggota</span></h3>
-      <input type="hidden" id="memberEditId">
-      <div class="space-y-4">
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Nama Anggota</label>
-          <input type="text" id="memberName" placeholder="Masukkan nama..." class="input-field w-full rounded-xl px-4 py-3">
-        </div>
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Status</label>
-          <select id="memberStatus" class="input-field w-full rounded-xl px-4 py-3">
-            <option value="active">Aktif</option>
-            <option value="inactive">Non-Aktif</option>
-          </select>
-        </div>
-      </div>
-      <div class="flex gap-3 mt-6">
-        <button onclick="hideModal('memberModal')" class="flex-1 glass py-3 rounded-xl font-semibold hover:bg-white/10 transition-all">Batal</button>
-        <button onclick="saveMember()" class="flex-1 btn-primary py-3 rounded-xl font-semibold transition-all">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="incomeModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="glass rounded-2xl p-6 w-full max-w-md">
-      <h3 class="text-xl font-bold mb-4">📥 Tambah Pemasukan</h3>
-      <div class="space-y-4">
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Anggota</label>
-          <select id="incomeMember" class="input-field w-full rounded-xl px-4 py-3"></select>
-        </div>
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Bulan</label>
-          <select id="incomeMonth" class="input-field w-full rounded-xl px-4 py-3">
-            <option value="0">Januari</option>
-            <option value="1">Februari</option>
-            <option value="2">Maret</option>
-            <option value="3">April</option>
-            <option value="4">Mei</option>
-            <option value="5">Juni</option>
-            <option value="6">Juli</option>
-            <option value="7">Agustus</option>
-            <option value="8">September</option>
-            <option value="9">Oktober</option>
-            <option value="10">November</option>
-            <option value="11">Desember</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Keterangan</label>
-          <input type="text" id="incomeDesc" placeholder="Iuran bulanan, dll..." class="input-field w-full rounded-xl px-4 py-3">
-        </div>
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Jumlah (Rp)</label>
-          <input type="number" id="incomeAmount" placeholder="50000" class="input-field w-full rounded-xl px-4 py-3">
-        </div>
-      </div>
-      <div class="flex gap-3 mt-6">
-        <button onclick="hideModal('incomeModal')" class="flex-1 glass py-3 rounded-xl font-semibold hover:bg-white/10 transition-all">Batal</button>
-        <button onclick="saveIncome()" class="flex-1 btn-primary py-3 rounded-xl font-semibold transition-all">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="expenseModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="glass rounded-2xl p-6 w-full max-w-md">
-      <h3 class="text-xl font-bold mb-4">📤 Tambah Pengeluaran</h3>
-      <div class="space-y-4">
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Keterangan</label>
-          <input type="text" id="expenseDesc" placeholder="Kegiatan, belanja, dll..." class="input-field w-full rounded-xl px-4 py-3">
-        </div>
-        <div>
-          <label class="text-sm text-zinc-400 mb-1 block">Jumlah (Rp)</label>
-          <input type="number" id="expenseAmount" placeholder="100000" class="input-field w-full rounded-xl px-4 py-3">
-        </div>
-      </div>
-      <div class="flex gap-3 mt-6">
-        <button onclick="hideModal('expenseModal')" class="flex-1 glass py-3 rounded-xl font-semibold hover:bg-white/10 transition-all">Batal</button>
-        <button onclick="saveExpense()" class="flex-1 btn-primary py-3 rounded-xl font-semibold transition-all">Simpan</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Footer -->
   <footer class="border-t border-white/5 py-6 mt-10 text-center text-zinc-600 text-xs">
-    <p>💰 KAS JAH-JUH — Buku Kas Komunitas</p>
+    <p>📒 BUKU KAS JAH-JUH — Kelompok Arisan & Simpan Pinjam</p>
     <p class="mt-1">Data tersimpan di browser • Auto-save aktif</p>
   </footer>
 
   <script>
-    // ========== DATA STORE ==========
-    const STORAGE_KEY = 'kas-jahjuh';
-    const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-    
-    let data = {
-      members: [],
-      income: [],
-      expense: []
-    };
+    // ========== CONFIG ==========
+    const STORAGE_KEY = 'buku-kas-jahjuh';
+    const MONTHS = ['Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const MEMBERS = [
+      'ALI', 'ADE', 'ADIB', 'ADIP', 'AHIS', 'ADNAN', 'ALPIN', 'AMAD',
+      'ALWI', 'ARIP', 'ANWAR', 'ARWANI', 'ARKAN', 'BADI', 'DENI', 'JIDAN',
+      'JIKIN', 'MEKI', 'PIUL', 'RISKI', 'FAHMI', 'ROSIDIN', 'YUSUP', 'LIHIN',
+      'SAMSUL', 'ULUL', 'HANIP', 'IRHAS'
+    ];
 
-    // Load from localStorage
+    // ========== DATA ==========
+    let data = {};
+
     function loadData() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         data = JSON.parse(saved);
       } else {
-        // Default members from PDF
-        data.members = [
-          'ALI','ADE','ADIB','ADIP','AHIS','ADNAN','ALPIN','AMAD','ALWI','ARIP',
-          'ANWAR','ARWANI','ARKAN','BADI','DENI','JIDAN','JIKIN','MEKI','PIUL','RISKI',
-          'FAHMI','ROSIDIN','YUSUP','LIHIN','SAMSUL','ULUL','HANIP','IRHAS'
-        ].map((name, i) => ({ id: i+1, name, status: 'active', createdAt: new Date().toISOString() }));
+        // Initialize empty data
+        data = {};
+        MEMBERS.forEach((name, i) => {
+          data[name] = {};
+          MONTHS.forEach(month => {
+            data[name][month] = 0;
+          });
+        });
         saveData();
       }
     }
 
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showToast('Data berhasil disimpan! 💾');
     }
 
     // ========== FORMAT ==========
     function formatRp(num) {
+      if (!num || num === 0) return '-';
       return 'Rp ' + Number(num).toLocaleString('id-ID');
     }
 
-    function formatDate(dateStr) {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    function formatRpShort(num) {
+      if (!num) return 'Rp 0';
+      if (num >= 1000000) return 'Rp ' + (num / 1000000).toFixed(1) + 'jt';
+      if (num >= 1000) return 'Rp ' + (num / 1000).toFixed(0) + 'rb';
+      return 'Rp ' + num;
     }
 
-    // ========== TABS ==========
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('tab-active');
-        b.classList.add('bg-white/5', 'text-zinc-400');
-      });
-      document.getElementById(`panel-${tab}`).classList.remove('hidden');
-      const btn = document.getElementById(`tab-${tab}`);
-      btn.classList.add('tab-active');
-      btn.classList.remove('bg-white/5', 'text-zinc-400');
+    // ========== RENDER ==========
+    function renderTable() {
+      const tbody = document.getElementById('kasBody');
+      let html = '';
       
-      if (tab === 'report') renderReport();
-      if (tab === 'income') renderIncome();
-      if (tab === 'expense') renderExpense();
-    }
-
-    // ========== MODAL ==========
-    function showModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById(id).classList.add('flex');
-      if (id === 'incomeModal') populateMemberSelect();
-    }
-
-    function hideModal(id) {
-      document.getElementById(id).classList.add('hidden');
-      document.getElementById(id).classList.remove('flex');
-    }
-
-    // ========== MEMBERS ==========
-    function renderMembers() {
-      const year = document.getElementById('yearFilter').value;
-      const tbody = document.getElementById('membersTable');
-      
-      tbody.innerHTML = data.members.map((m, i) => {
-        const totalIuran = data.income
-          .filter(t => t.memberId === m.id && new Date(t.date).getFullYear() == year)
-          .reduce((sum, t) => sum + t.amount, 0);
+      MEMBERS.forEach((name, i) => {
+        const memberData = data[name] || {};
+        let total = 0;
         
-        return `
-          <tr class="table-row border-b border-white/5 transition-all">
-            <td class="px-4 py-3 text-sm text-zinc-400">${i+1}</td>
-            <td class="px-4 py-3 font-semibold">${m.name}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold ${m.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
-                ${m.status === 'active' ? 'Aktif' : 'Non-Aktif'}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-green-400 font-semibold">${formatRp(totalIuran)}</td>
-            <td class="px-4 py-3 text-right">
-              <button onclick="editMember(${m.id})" class="text-blue-400 hover:text-blue-300 text-sm mr-2">✏️</button>
-              <button onclick="deleteMember(${m.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+        html += `<tr class="member-row border-b border-white/5">`;
+        html += `<td class="px-3 py-2 text-center text-sm text-zinc-400 fixed-col">${i + 1}</td>`;
+        html += `<td class="px-3 py-2 font-semibold text-sm fixed-col-2">${name}</td>`;
+        
+        MONTHS.forEach(month => {
+          const value = memberData[month] || 0;
+          total += value;
+          const hasValue = value > 0;
+          
+          html += `<td class="p-0.5">
+            <input type="number" 
+              class="input-cell ${hasValue ? 'has-value' : ''}" 
+              value="${value || ''}" 
+              placeholder="-"
+              onchange="updateValue('${name}', '${month}', this.value)"
+              onfocus="this.select()"
+            >
+          </td>`;
+        });
+        
+        html += `<td class="total-cell">${formatRp(total)}</td>`;
+        
+        // Status
+        const paidMonths = MONTHS.filter(m => (memberData[m] || 0) > 0).length;
+        const totalMonths = MONTHS.length;
+        let statusClass, statusText;
+        if (paidMonths === totalMonths) {
+          statusClass = 'badge-green';
+          statusText = 'Lunas';
+        } else if (paidMonths > 0) {
+          statusClass = 'badge-yellow';
+          statusText = `${paidMonths}/${totalMonths}`;
+        } else {
+          statusClass = 'badge-red';
+          statusText = 'Belum';
+        }
+        html += `<td class="text-center"><span class="badge ${statusClass}">${statusText}</span></td>`;
+        
+        html += `</tr>`;
+      });
+      
+      tbody.innerHTML = html;
     }
 
-    function saveMember() {
-      const editId = document.getElementById('memberEditId').value;
-      const name = document.getElementById('memberName').value.trim().toUpperCase();
-      const status = document.getElementById('memberStatus').value;
+    function renderTotals() {
+      let grandTotal = 0;
+      let totalPaid = 0;
+      let totalUnpaid = 0;
       
-      if (!name) return alert('Nama harus diisi!');
+      MONTHS.forEach(month => {
+        let monthTotal = 0;
+        MEMBERS.forEach(name => {
+          const val = (data[name] && data[name][month]) || 0;
+          monthTotal += val;
+          if (val > 0) totalPaid++;
+          else totalUnpaid++;
+        });
+        document.getElementById(`total-${month}`).textContent = formatRpShort(monthTotal);
+        grandTotal += monthTotal;
+      });
       
-      if (editId) {
-        const member = data.members.find(m => m.id == editId);
-        if (member) {
-          member.name = name;
-          member.status = status;
-        }
-      } else {
-        const maxId = data.members.reduce((max, m) => Math.max(max, m.id), 0);
-        data.members.push({ id: maxId + 1, name, status, createdAt: new Date().toISOString() });
+      document.getElementById('grandTotal').textContent = formatRp(grandTotal);
+      document.getElementById('totalKas').textContent = formatRpShort(grandTotal);
+      document.getElementById('totalPaid').textContent = totalPaid;
+      document.getElementById('totalUnpaid').textContent = totalUnpaid;
+      document.getElementById('avgPerMonth').textContent = formatRpShort(Math.round(grandTotal / MONTHS.length));
+    }
+
+    function renderAll() {
+      renderTable();
+      renderTotals();
+    }
+
+    // ========== ACTIONS ==========
+    function updateValue(name, month, value) {
+      if (!data[name]) data[name] = {};
+      data[name][month] = parseInt(value) || 0;
+      
+      // Auto-save
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      renderTotals();
+    }
+
+    function fillAllMonth() {
+      const month = prompt('Masukkan bulan (Mei/Juni/Juli/Agustus/September/Oktober/November/Desember):');
+      if (!month || !MONTHS.includes(month)) {
+        alert('Bulan tidak valid!');
+        return;
       }
       
-      saveData();
-      renderAll();
-      hideModal('memberModal');
-      document.getElementById('memberName').value = '';
-      document.getElementById('memberEditId').value = '';
-      document.getElementById('memberModalTitle').textContent = 'Tambah Anggota';
-    }
-
-    function editMember(id) {
-      const member = data.members.find(m => m.id === id);
-      if (!member) return;
-      document.getElementById('memberEditId').value = id;
-      document.getElementById('memberName').value = member.name;
-      document.getElementById('memberStatus').value = member.status;
-      document.getElementById('memberModalTitle').textContent = 'Edit Anggota';
-      showModal('memberModal');
-    }
-
-    function deleteMember(id) {
-      if (!confirm('Yakin hapus anggota ini?')) return;
-      data.members = data.members.filter(m => m.id !== id);
-      data.income = data.income.filter(t => t.memberId !== id);
-      saveData();
-      renderAll();
-    }
-
-    // ========== INCOME ==========
-    function populateMemberSelect() {
-      const select = document.getElementById('incomeMember');
-      select.innerHTML = '<option value="">-- Pilih Anggota --</option>' +
-        data.members.filter(m => m.status === 'active').map(m => 
-          `<option value="${m.id}">${m.name}</option>`
-        ).join('');
-    }
-
-    function renderIncome() {
-      const year = document.getElementById('yearFilter').value;
-      const tbody = document.getElementById('incomeTable');
+      const amount = prompt('Masukkan jumlah iuran (contoh: 50000):');
+      if (!amount || isNaN(amount)) {
+        alert('Jumlah tidak valid!');
+        return;
+      }
       
-      const filtered = data.income
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      if (!confirm(`Isi semua anggota bulan ${month} sebesar Rp ${Number(amount).toLocaleString('id-ID')}?`)) return;
       
-      tbody.innerHTML = filtered.map(t => {
-        const member = data.members.find(m => m.id === t.memberId);
-        return `
-          <tr class="table-row border-b border-white/5 transition-all">
-            <td class="px-4 py-3 text-sm text-zinc-400">${formatDate(t.date)}</td>
-            <td class="px-4 py-3 font-semibold">${member ? member.name : 'N/A'}</td>
-            <td class="px-4 py-3 text-zinc-300">${t.description} (${MONTHS[t.month]})</td>
-            <td class="px-4 py-3 text-green-400 font-semibold">${formatRp(t.amount)}</td>
-            <td class="px-4 py-3 text-right">
-              <button onclick="deleteIncome('${t.id}')" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function saveIncome() {
-      const memberId = parseInt(document.getElementById('incomeMember').value);
-      const month = parseInt(document.getElementById('incomeMonth').value);
-      const description = document.getElementById('incomeDesc').value.trim() || 'Iuran bulanan';
-      const amount = parseInt(document.getElementById('incomeAmount').value);
-      
-      if (!memberId) return alert('Pilih anggota!');
-      if (!amount || amount <= 0) return alert('Jumlah harus lebih dari 0!');
-      
-      data.income.push({
-        id: Date.now().toString(),
-        memberId,
-        month,
-        description,
-        amount,
-        date: new Date().toISOString()
+      MEMBERS.forEach(name => {
+        if (!data[name]) data[name] = {};
+        data[name][month] = parseInt(amount);
       });
       
       saveData();
       renderAll();
-      hideModal('incomeModal');
-      document.getElementById('incomeDesc').value = '';
-      document.getElementById('incomeAmount').value = '';
     }
 
-    function deleteIncome(id) {
-      if (!confirm('Yakin hapus pemasukan ini?')) return;
-      data.income = data.income.filter(t => t.id !== id);
-      saveData();
-      renderAll();
-    }
-
-    // ========== EXPENSE ==========
-    function renderExpense() {
-      const year = document.getElementById('yearFilter').value;
-      const tbody = document.getElementById('expenseTable');
+    function clearAllData() {
+      if (!confirm('⚠️ Yakin mau reset SEMUA data? Data yang sudah dihapus tidak bisa dikembalikan!')) return;
+      if (!confirm('Konfirmasi sekali lagi: HAPUS SEMUA DATA?')) return;
       
-      const filtered = data.expense
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      tbody.innerHTML = filtered.map(t => `
-        <tr class="table-row border-b border-white/5 transition-all">
-          <td class="px-4 py-3 text-sm text-zinc-400">${formatDate(t.date)}</td>
-          <td class="px-4 py-3 text-zinc-300">${t.description}</td>
-          <td class="px-4 py-3 text-red-400 font-semibold">${formatRp(t.amount)}</td>
-          <td class="px-4 py-3 text-right">
-            <button onclick="deleteExpense('${t.id}')" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function saveExpense() {
-      const description = document.getElementById('expenseDesc').value.trim();
-      const amount = parseInt(document.getElementById('expenseAmount').value);
-      
-      if (!description) return alert('Keterangan harus diisi!');
-      if (!amount || amount <= 0) return alert('Jumlah harus lebih dari 0!');
-      
-      data.expense.push({
-        id: Date.now().toString(),
-        description,
-        amount,
-        date: new Date().toISOString()
+      MEMBERS.forEach(name => {
+        data[name] = {};
+        MONTHS.forEach(month => {
+          data[name][month] = 0;
+        });
       });
       
       saveData();
       renderAll();
-      hideModal('expenseModal');
-      document.getElementById('expenseDesc').value = '';
-      document.getElementById('expenseAmount').value = '';
     }
 
-    function deleteExpense(id) {
-      if (!confirm('Yakin hapus pengeluaran ini?')) return;
-      data.expense = data.expense.filter(t => t.id !== id);
+    function markAllPaid() {
+      const amount = prompt('Masukkan jumlah iuran per bulan (contoh: 50000):');
+      if (!amount || isNaN(amount)) return;
+      
+      if (!confirm(`Tandai SEMUA anggota LUNAS untuk semua bulan sebesar Rp ${Number(amount).toLocaleString('id-ID')}?`)) return;
+      
+      MEMBERS.forEach(name => {
+        data[name] = {};
+        MONTHS.forEach(month => {
+          data[name][month] = parseInt(amount);
+        });
+      });
+      
       saveData();
       renderAll();
-    }
-
-    // ========== STATS ==========
-    function updateStats() {
-      const year = document.getElementById('yearFilter').value;
-      
-      const totalMembers = data.members.filter(m => m.status === 'active').length;
-      const totalIncome = data.income
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .reduce((sum, t) => sum + t.amount, 0);
-      const totalExpense = data.expense
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .reduce((sum, t) => sum + t.amount, 0);
-      const balance = totalIncome - totalExpense;
-      
-      document.getElementById('totalMembers').textContent = totalMembers;
-      document.getElementById('totalIncome').textContent = formatRp(totalIncome);
-      document.getElementById('totalExpense').textContent = formatRp(totalExpense);
-      document.getElementById('totalBalance').textContent = formatRp(balance);
-      document.getElementById('totalBalance').className = `text-3xl font-black ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}`;
-    }
-
-    // ========== REPORT ==========
-    let chartInstance = null;
-    
-    function renderReport() {
-      const year = document.getElementById('yearFilter').value;
-      
-      const monthlyData = MONTHS.map((month, i) => {
-        const income = data.income
-          .filter(t => new Date(t.date).getFullYear() == year && t.month === i)
-          .reduce((sum, t) => sum + t.amount, 0);
-        const expense = data.expense
-          .filter(t => {
-            const d = new Date(t.date);
-            return d.getFullYear() == year && d.getMonth() === i;
-          })
-          .reduce((sum, t) => sum + t.amount, 0);
-        return { month, income, expense, balance: income - expense };
-      });
-      
-      // Chart
-      const ctx = document.getElementById('chartReport').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-      
-      chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: MONTHS.map(m => m.substring(0, 3)),
-          datasets: [
-            {
-              label: 'Pemasukan',
-              data: monthlyData.map(d => d.income),
-              backgroundColor: 'rgba(34, 197, 94, 0.6)',
-              borderColor: 'rgb(34, 197, 94)',
-              borderWidth: 1
-            },
-            {
-              label: 'Pengeluaran',
-              data: monthlyData.map(d => d.expense),
-              backgroundColor: 'rgba(239, 68, 68, 0.6)',
-              borderColor: 'rgb(239, 68, 68)',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: '#a0a0a0' } } },
-          scales: {
-            x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            y: { ticks: { color: '#a0a0a0', callback: v => 'Rp ' + v.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } }
-          }
-        }
-      });
-      
-      // Monthly recap
-      const reportDiv = document.getElementById('monthlyReport');
-      reportDiv.innerHTML = monthlyData
-        .filter(d => d.income > 0 || d.expense > 0)
-        .map(d => `
-          <div class="flex justify-between items-center p-3 bg-white/3 rounded-xl">
-            <span class="font-semibold text-sm">${d.month}</span>
-            <div class="flex gap-4 text-sm">
-              <span class="text-green-400">+${formatRp(d.income)}</span>
-              <span class="text-red-400">-${formatRp(d.expense)}</span>
-              <span class="font-bold ${d.balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatRp(d.balance)}</span>
-            </div>
-          </div>
-        `).join('') || '<p class="text-zinc-500 text-center py-4">Belum ada data transaksi</p>';
     }
 
     // ========== EXPORT ==========
-    function exportCSV() {
-      const year = document.getElementById('yearFilter').value;
-      let csv = 'No,Nama,Status,Total Iuran\n';
+    function exportToCSV() {
+      let csv = 'No,Nama,' + MONTHS.join(',') + ',Total,Status\n';
       
-      data.members.forEach((m, i) => {
-        const total = data.income
-          .filter(t => t.memberId === m.id && new Date(t.date).getFullYear() == year)
-          .reduce((sum, t) => sum + t.amount, 0);
-        csv += `${i+1},${m.name},${m.status === 'active' ? 'Aktif' : 'Non-Aktif'},${total}\n`;
+      MEMBERS.forEach((name, i) => {
+        const memberData = data[name] || {};
+        let total = 0;
+        let values = [];
+        
+        MONTHS.forEach(month => {
+          const val = memberData[month] || 0;
+          total += val;
+          values.push(val);
+        });
+        
+        const paidMonths = MONTHS.filter(m => (memberData[m] || 0) > 0).length;
+        const status = paidMonths === MONTHS.length ? 'Lunas' : (paidMonths > 0 ? `${paidMonths}/${MONTHS.length}` : 'Belum');
+        
+        csv += `${i + 1},${name},${values.join(',')},${total},${status}\n`;
       });
       
-      csv += '\n\nRIWAYAT PEMASUKAN\nTanggal,Anggota,Keterangan,Bulan,Jumlah\n';
-      data.income
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .forEach(t => {
-          const member = data.members.find(m => m.id === t.memberId);
-          csv += `${formatDate(t.date)},${member ? member.name : 'N/A'},${t.description},${MONTHS[t.month]},${t.amount}\n`;
+      // Add totals
+      let totalRow = ',TOTAL PER BULAN,';
+      MONTHS.forEach(month => {
+        let monthTotal = 0;
+        MEMBERS.forEach(name => {
+          monthTotal += (data[name] && data[name][month]) || 0;
         });
-      
-      csv += '\n\nRIWAYAT PENGELUARAN\nTanggal,Keterangan,Jumlah\n';
-      data.expense
-        .filter(t => new Date(t.date).getFullYear() == year)
-        .forEach(t => {
-          csv += `${formatDate(t.date)},${t.description},${t.amount}\n`;
-        });
+        totalRow += monthTotal + ',';
+      });
+      csv += totalRow + '\n';
       
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `kas-jahjuh-${year}.csv`;
+      a.download = `buku-kas-jahjuh-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
+      
+      showToast('File CSV berhasil didownload! 📥');
     }
 
-    // ========== RENDER ALL ==========
-    function renderAll() {
-      renderMembers();
-      updateStats();
+    // ========== TOAST ==========
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 transition-all transform translate-y-0 opacity-100';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.transform = 'translateY(100px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
     }
 
     // ========== INIT ==========
     loadData();
     renderAll();
     
-    // Set current month in income modal
-    document.getElementById('incomeMonth').value = new Date().getMonth();
+    // Auto-save every 30 seconds
+    setInterval(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }, 30000);
   </script>
 </body>
 </html>
