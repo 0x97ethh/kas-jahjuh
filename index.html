@@ -11,86 +11,90 @@
     body { font-family: 'Inter', sans-serif; background: #0a0a0f; }
     .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
     .gradient-text { background: linear-gradient(135deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .input-cell { 
-      background: rgba(255,255,255,0.05); 
-      border: 1px solid rgba(255,255,255,0.1); 
-      color: white; 
-      text-align: center;
-      padding: 8px 4px;
-      width: 100%;
-      font-size: 13px;
-    }
-    .input-cell:focus { 
-      border-color: #e50914; 
-      outline: none; 
-      box-shadow: 0 0 0 2px rgba(229,9,20,0.2); 
-    }
-    .input-cell.has-value {
-      background: rgba(34,197,94,0.1);
-      border-color: rgba(34,197,94,0.3);
-    }
-    .month-header { 
-      background: linear-gradient(135deg, #e50914, #ff4444);
-      color: white;
-      font-weight: 600;
-      text-align: center;
-      padding: 12px 8px;
-      min-width: 100px;
-    }
-    .member-row:hover { background: rgba(255,255,255,0.03); }
-    .total-cell {
-      background: rgba(59,130,246,0.1);
-      border: 1px solid rgba(59,130,246,0.2);
-      color: #60a5fa;
-      font-weight: 700;
-      text-align: center;
-      padding: 8px 4px;
-    }
-    .total-row { background: rgba(59,130,246,0.05); }
     .btn-primary { background: linear-gradient(135deg, #e50914, #ff4444); }
-    .btn-primary:hover { background: linear-gradient(135deg, #ff4444, #e50914); transform: translateY(-1px); }
+    .btn-primary:hover { background: linear-gradient(135deg, #ff4444, #e50914); }
     .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
     .btn-success:hover { background: linear-gradient(135deg, #16a34a, #22c55e); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #1a1a2e; }
-    ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 3px; }
-    .table-container { overflow-x: auto; }
-    .fixed-header { position: sticky; top: 0; z-index: 10; }
-    .fixed-col { 
-      position: sticky; 
-      left: 0; 
-      z-index: 5; 
-      background: #0a0a0f;
+    .month-tab { 
+      padding: 10px 20px; 
+      border-radius: 12px; 
+      font-weight: 600; 
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.05);
+      color: #a0a0a0;
+      border: 1px solid rgba(255,255,255,0.1);
     }
-    .fixed-col-2 { 
-      position: sticky; 
-      left: 50px; 
-      z-index: 5; 
-      background: #0a0a0f;
+    .month-tab:hover { background: rgba(255,255,255,0.1); }
+    .month-tab.active { 
+      background: linear-gradient(135deg, #e50914, #ff4444); 
+      color: white;
+      border-color: transparent;
     }
-    .month-total { 
-      background: rgba(251,191,36,0.1);
-      border: 1px solid rgba(251,191,36,0.2);
-      color: #fbbf24;
-      font-weight: 700;
+    .month-tab.completed { 
+      background: rgba(34,197,94,0.2); 
+      color: #4ade80;
+      border-color: rgba(34,197,94,0.3);
     }
+    .input-amount { 
+      background: rgba(255,255,255,0.05); 
+      border: 2px solid rgba(255,255,255,0.1); 
+      color: white; 
+      text-align: center;
+      padding: 12px 8px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+    }
+    .input-amount:focus { 
+      border-color: #e50914; 
+      outline: none; 
+      box-shadow: 0 0 0 3px rgba(229,9,20,0.2); 
+    }
+    .input-amount.has-value {
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.5);
+    }
+    .member-card { 
+      background: rgba(255,255,255,0.03); 
+      border: 1px solid rgba(255,255,255,0.05); 
+      border-radius: 16px; 
+      padding: 16px;
+      transition: all 0.2s;
+    }
+    .member-card:hover { background: rgba(255,255,255,0.05); }
+    .member-card.paid { border-color: rgba(34,197,94,0.3); }
     .badge { padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
     .badge-green { background: rgba(34,197,94,0.2); color: #4ade80; }
-    .badge-yellow { background: rgba(251,191,36,0.2); color: #fbbf24; }
     .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .progress-bar { 
+      height: 8px; 
+      border-radius: 4px; 
+      background: rgba(255,255,255,0.1); 
+      overflow: hidden;
+    }
+    .progress-fill { 
+      height: 100%; 
+      border-radius: 4px; 
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      transition: width 0.5s ease;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; }
+    ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 3px; }
     @media print {
       body { background: white; color: black; }
       .no-print { display: none; }
       .glass { background: white; border: 1px solid #ccc; }
-      .input-cell { border: 1px solid #ccc; color: black; background: white; }
-      .month-header { background: #e50914; }
     }
   </style>
 </head>
 <body class="text-white min-h-screen">
   <!-- Header -->
   <header class="glass sticky top-0 z-50 border-b border-white/5">
-    <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-2xl">📒</span>
         <div>
@@ -99,115 +103,86 @@
         </div>
       </div>
       <div class="flex items-center gap-3 no-print">
-        <select id="yearSelect" class="input-cell rounded-lg px-3 py-1.5 text-sm w-auto" onchange="renderAll()">
+        <select id="yearSelect" class="input-amount rounded-lg px-3 py-1.5 text-sm w-auto" onchange="renderAll()">
           <option value="2026">2026</option>
           <option value="2025">2025</option>
         </select>
-        <button onclick="exportToCSV()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10 transition-all">📥 Export CSV</button>
-        <button onclick="window.print()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10 transition-all">🖨️ Cetak</button>
-        <button onclick="saveData()" class="btn-success px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">💾 Simpan</button>
+        <button onclick="exportToCSV()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10">📥</button>
+        <button onclick="window.print()" class="glass rounded-lg px-3 py-1.5 text-sm hover:bg-white/10">🖨️</button>
+        <button onclick="saveData()" class="btn-success px-4 py-1.5 rounded-lg text-sm font-semibold">💾</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-full px-4 py-6">
+  <main class="max-w-4xl mx-auto px-4 py-6">
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">👥</span>
-          <span class="text-xs text-zinc-400">Anggota</span>
-        </div>
-        <div class="text-2xl font-black gradient-text" id="totalMembers">28</div>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="glass rounded-2xl p-4 text-center">
+        <div class="text-3xl font-black text-green-400" id="totalKas">Rp 0</div>
+        <div class="text-xs text-zinc-400 mt-1">Total Kas</div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">💰</span>
-          <span class="text-xs text-zinc-400">Total Kas</span>
-        </div>
-        <div class="text-2xl font-black text-green-400" id="totalKas">Rp 0</div>
+      <div class="glass rounded-2xl p-4 text-center">
+        <div class="text-3xl font-black text-blue-400" id="paidCount">0/28</div>
+        <div class="text-xs text-zinc-400 mt-1">Sudah Bayar</div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">✅</span>
-          <span class="text-xs text-zinc-400">Sudah Bayar</span>
-        </div>
-        <div class="text-2xl font-black text-blue-400" id="totalPaid">0</div>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">⏳</span>
-          <span class="text-xs text-zinc-400">Belum Bayar</span>
-        </div>
-        <div class="text-2xl font-black text-yellow-400" id="totalUnpaid">0</div>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-lg">📊</span>
-          <span class="text-xs text-zinc-400">Per Bulan</span>
-        </div>
-        <div class="text-2xl font-black text-purple-400" id="avgPerMonth">Rp 0</div>
+      <div class="glass rounded-2xl p-4 text-center">
+        <div class="text-3xl font-black text-yellow-400" id="progressPct">0%</div>
+        <div class="text-xs text-zinc-400 mt-1">Progress</div>
       </div>
     </div>
 
-    <!-- Table -->
-    <div class="glass rounded-2xl overflow-hidden">
-      <div class="table-container">
-        <table class="w-full border-collapse" id="kasTable">
-          <thead>
-            <tr>
-              <th class="month-header fixed-col" style="min-width:50px">No</th>
-              <th class="month-header fixed-col-2" style="min-width:120px">Nama</th>
-              <th class="month-header" id="header-Mei">Mei</th>
-              <th class="month-header" id="header-Juni">Juni</th>
-              <th class="month-header" id="header-Juli">Juli</th>
-              <th class="month-header" id="header-Agustus">Agustus</th>
-              <th class="month-header" id="header-September">September</th>
-              <th class="month-header" id="header-Oktober">Oktober</th>
-              <th class="month-header" id="header-November">November</th>
-              <th class="month-header" id="header-Desember">Desember</th>
-              <th class="month-header" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">TOTAL</th>
-              <th class="month-header" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">STATUS</th>
-            </tr>
-          </thead>
-          <tbody id="kasBody">
-          </tbody>
-          <tfoot>
-            <tr class="total-row">
-              <td class="total-cell fixed-col" colspan="2" style="text-align:left; padding-left:16px;">📊 TOTAL PER BULAN</td>
-              <td class="month-total" id="total-Mei">0</td>
-              <td class="month-total" id="total-Juni">0</td>
-              <td class="month-total" id="total-Juli">0</td>
-              <td class="month-total" id="total-Agustus">0</td>
-              <td class="month-total" id="total-September">0</td>
-              <td class="month-total" id="total-Oktober">0</td>
-              <td class="month-total" id="total-November">0</td>
-              <td class="month-total" id="total-Desember">0</td>
-              <td class="total-cell" id="grandTotal">0</td>
-              <td class="total-cell">-</td>
-            </tr>
-          </tfoot>
-        </table>
+    <!-- Progress Bar -->
+    <div class="glass rounded-full p-1 mb-6">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="flex flex-wrap gap-3 mt-6 no-print">
-      <button onclick="fillAllMonth()" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold transition-all">💰 Isi Semua Bulan Ini</button>
-      <button onclick="clearAllData()" class="glass px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-500/20 hover:border-red-500/50 transition-all">🗑️ Reset Data</button>
-      <button onclick="markAllPaid()" class="btn-success px-4 py-2 rounded-xl text-sm font-semibold transition-all">✅ Tandai Semua Lunas</button>
+    <!-- Month Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6 no-print" id="monthTabs">
     </div>
 
-    <!-- Info -->
+    <!-- Current Month Header -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold" id="currentMonthTitle">📅 Mei 2026</h2>
+      <div class="flex gap-2 no-print">
+        <button onclick="prevMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">◀</button>
+        <button onclick="nextMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">▶</button>
+      </div>
+    </div>
+
+    <!-- Quick Fill -->
+    <div class="glass rounded-2xl p-4 mb-6 no-print">
+      <div class="flex items-center gap-4">
+        <input type="number" id="quickAmount" placeholder="Masukkan jumlah iuran..." class="input-amount flex-1" value="50000">
+        <button onclick="fillCurrentMonth()" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap">💰 Isi Semua</button>
+      </div>
+    </div>
+
+    <!-- Members Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="membersGrid">
+    </div>
+
+    <!-- Month Summary -->
+    <div class="glass rounded-2xl p-4 mt-6">
+      <h3 class="font-semibold mb-3">📊 Ringkasan Bulan <span id="summaryMonth">Mei</span></h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <div class="text-sm text-zinc-400">Total Terkumpul</div>
+          <div class="text-xl font-bold text-green-400" id="monthTotal">Rp 0</div>
+        </div>
+        <div>
+          <div class="text-sm text-zinc-400">Sudah Bayar</div>
+          <div class="text-xl font-bold text-blue-400" id="monthPaid">0/28</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Months Summary -->
     <div class="glass rounded-2xl p-4 mt-6 no-print">
-      <h3 class="font-semibold mb-2">ℹ️ Informasi</h3>
-      <ul class="text-sm text-zinc-400 space-y-1">
-        <li>• Klik sel untuk mengisi jumlah iuran</li>
-        <li>• Data tersimpan otomatis di browser (localStorage)</li>
-        <li>• Klik 💾 Simpan untuk backup data</li>
-        <li>• Export ke CSV untuk backup di Excel/Google Sheets</li>
-        <li>• Gunakan 🖨️ Cetak untuk print laporan</li>
-      </ul>
+      <h3 class="font-semibold mb-3">📈 Ringkasan Semua Bulan</h3>
+      <div class="space-y-3" id="allMonthsSummary">
+      </div>
     </div>
   </main>
 
@@ -228,17 +203,18 @@
       'SAMSUL', 'ULUL', 'HANIP', 'IRHAS'
     ];
 
-    // ========== DATA ==========
+    // ========== STATE ==========
     let data = {};
+    let currentMonthIndex = 0;
 
+    // ========== DATA ==========
     function loadData() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         data = JSON.parse(saved);
       } else {
-        // Initialize empty data
         data = {};
-        MEMBERS.forEach((name, i) => {
+        MEMBERS.forEach(name => {
           data[name] = {};
           MONTHS.forEach(month => {
             data[name][month] = 0;
@@ -255,196 +231,206 @@
 
     // ========== FORMAT ==========
     function formatRp(num) {
-      if (!num || num === 0) return '-';
+      if (!num || num === 0) return 'Rp 0';
       return 'Rp ' + Number(num).toLocaleString('id-ID');
     }
 
-    function formatRpShort(num) {
-      if (!num) return 'Rp 0';
-      if (num >= 1000000) return 'Rp ' + (num / 1000000).toFixed(1) + 'jt';
-      if (num >= 1000) return 'Rp ' + (num / 1000).toFixed(0) + 'rb';
-      return 'Rp ' + num;
+    // ========== RENDER ==========
+    function renderMonthTabs() {
+      const container = document.getElementById('monthTabs');
+      let html = '';
+      
+      MONTHS.forEach((month, i) => {
+        const paidCount = MEMBERS.filter(name => (data[name] && data[name][month]) > 0).length;
+        const isComplete = paidCount === MEMBERS.length;
+        const isActive = i === currentMonthIndex;
+        
+        let classes = 'month-tab';
+        if (isActive) classes += ' active';
+        else if (isComplete) classes += ' completed';
+        
+        html += `<button class="${classes}" onclick="selectMonth(${i})">
+          ${month}
+          ${isComplete ? ' ✅' : ` <span class="text-xs opacity-70">${paidCount}/${MEMBERS.length}</span>`}
+        </button>`;
+      });
+      
+      container.innerHTML = html;
     }
 
-    // ========== RENDER ==========
-    function renderTable() {
-      const tbody = document.getElementById('kasBody');
+    function renderMembers() {
+      const month = MONTHS[currentMonthIndex];
+      const container = document.getElementById('membersGrid');
       let html = '';
       
       MEMBERS.forEach((name, i) => {
-        const memberData = data[name] || {};
-        let total = 0;
+        const value = (data[name] && data[name][month]) || 0;
+        const hasValue = value > 0;
         
-        html += `<tr class="member-row border-b border-white/5">`;
-        html += `<td class="px-3 py-2 text-center text-sm text-zinc-400 fixed-col">${i + 1}</td>`;
-        html += `<td class="px-3 py-2 font-semibold text-sm fixed-col-2">${name}</td>`;
-        
-        MONTHS.forEach(month => {
-          const value = memberData[month] || 0;
-          total += value;
-          const hasValue = value > 0;
-          
-          html += `<td class="p-0.5">
-            <input type="number" 
-              class="input-cell ${hasValue ? 'has-value' : ''}" 
-              value="${value || ''}" 
-              placeholder="-"
-              onchange="updateValue('${name}', '${month}', this.value)"
-              onfocus="this.select()"
-            >
-          </td>`;
-        });
-        
-        html += `<td class="total-cell">${formatRp(total)}</td>`;
-        
-        // Status
-        const paidMonths = MONTHS.filter(m => (memberData[m] || 0) > 0).length;
-        const totalMonths = MONTHS.length;
-        let statusClass, statusText;
-        if (paidMonths === totalMonths) {
-          statusClass = 'badge-green';
-          statusText = 'Lunas';
-        } else if (paidMonths > 0) {
-          statusClass = 'badge-yellow';
-          statusText = `${paidMonths}/${totalMonths}`;
-        } else {
-          statusClass = 'badge-red';
-          statusText = 'Belum';
-        }
-        html += `<td class="text-center"><span class="badge ${statusClass}">${statusText}</span></td>`;
-        
-        html += `</tr>`;
+        html += `<div class="member-card ${hasValue ? 'paid' : ''}">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm">${name}</span>
+            <span class="badge ${hasValue ? 'badge-green' : 'badge-red'}">${hasValue ? '✅' : '❌'}</span>
+          </div>
+          <input type="number" 
+            class="input-amount ${hasValue ? 'has-value' : ''}" 
+            value="${value || ''}" 
+            placeholder="0"
+            onchange="updateValue('${name}', this.value)"
+            onfocus="this.select()"
+          >
+        </div>`;
       });
       
-      tbody.innerHTML = html;
+      container.innerHTML = html;
     }
 
-    function renderTotals() {
-      let grandTotal = 0;
-      let totalPaid = 0;
-      let totalUnpaid = 0;
+    function renderStats() {
+      const month = MONTHS[currentMonthIndex];
+      let totalKas = 0;
+      let paidCount = 0;
+      let monthTotal = 0;
+      let monthPaid = 0;
       
-      MONTHS.forEach(month => {
-        let monthTotal = 0;
-        MEMBERS.forEach(name => {
-          const val = (data[name] && data[name][month]) || 0;
-          monthTotal += val;
-          if (val > 0) totalPaid++;
-          else totalUnpaid++;
+      // All months total
+      MEMBERS.forEach(name => {
+        MONTHS.forEach(m => {
+          totalKas += (data[name] && data[name][m]) || 0;
         });
-        document.getElementById(`total-${month}`).textContent = formatRpShort(monthTotal);
-        grandTotal += monthTotal;
       });
       
-      document.getElementById('grandTotal').textContent = formatRp(grandTotal);
-      document.getElementById('totalKas').textContent = formatRpShort(grandTotal);
-      document.getElementById('totalPaid').textContent = totalPaid;
-      document.getElementById('totalUnpaid').textContent = totalUnpaid;
-      document.getElementById('avgPerMonth').textContent = formatRpShort(Math.round(grandTotal / MONTHS.length));
+      // Current month
+      MEMBERS.forEach(name => {
+        const val = (data[name] && data[name][month]) || 0;
+        if (val > 0) {
+          monthPaid++;
+          monthTotal += val;
+        }
+      });
+      
+      // Total paid across all months
+      MEMBERS.forEach(name => {
+        MONTHS.forEach(m => {
+          if ((data[name] && data[name][m]) > 0) paidCount++;
+        });
+      });
+      
+      const totalSlots = MEMBERS.length * MONTHS.length;
+      const progressPct = totalSlots > 0 ? Math.round(paidCount / totalSlots * 100) : 0;
+      
+      document.getElementById('totalKas').textContent = formatRp(totalKas);
+      document.getElementById('paidCount').textContent = `${monthPaid}/${MEMBERS.length}`;
+      document.getElementById('progressPct').textContent = `${progressPct}%`;
+      document.getElementById('progressBar').style.width = `${progressPct}%`;
+      
+      document.getElementById('currentMonthTitle').textContent = `📅 ${month} ${document.getElementById('yearSelect').value}`;
+      document.getElementById('summaryMonth').textContent = month;
+      document.getElementById('monthTotal').textContent = formatRp(monthTotal);
+      document.getElementById('monthPaid').textContent = `${monthPaid}/${MEMBERS.length}`;
+    }
+
+    function renderAllMonthsSummary() {
+      const container = document.getElementById('allMonthsSummary');
+      let html = '';
+      
+      MONTHS.forEach((month, i) => {
+        let monthTotal = 0;
+        let monthPaid = 0;
+        
+        MEMBERS.forEach(name => {
+          const val = (data[name] && data[name][month]) || 0;
+          if (val > 0) {
+            monthPaid++;
+            monthTotal += val;
+          }
+        });
+        
+        const pct = Math.round(monthPaid / MEMBERS.length * 100);
+        
+        html += `<div class="flex items-center gap-4 p-3 rounded-xl bg-white/3 cursor-pointer hover:bg-white/5" onclick="selectMonth(${i})">
+          <span class="font-semibold w-24">${month}</span>
+          <div class="flex-1 progress-bar">
+            <div class="progress-fill" style="width: ${pct}%"></div>
+          </div>
+          <span class="text-sm text-zinc-400 w-16 text-right">${monthPaid}/${MEMBERS.length}</span>
+          <span class="text-sm font-semibold text-green-400 w-24 text-right">${formatRp(monthTotal)}</span>
+        </div>`;
+      });
+      
+      container.innerHTML = html;
     }
 
     function renderAll() {
-      renderTable();
-      renderTotals();
+      renderMonthTabs();
+      renderMembers();
+      renderStats();
+      renderAllMonthsSummary();
     }
 
     // ========== ACTIONS ==========
-    function updateValue(name, month, value) {
+    function selectMonth(index) {
+      currentMonthIndex = index;
+      renderAll();
+    }
+
+    function prevMonth() {
+      if (currentMonthIndex > 0) {
+        currentMonthIndex--;
+        renderAll();
+      }
+    }
+
+    function nextMonth() {
+      if (currentMonthIndex < MONTHS.length - 1) {
+        currentMonthIndex++;
+        renderAll();
+      }
+    }
+
+    function updateValue(name, value) {
+      const month = MONTHS[currentMonthIndex];
       if (!data[name]) data[name] = {};
       data[name][month] = parseInt(value) || 0;
       
-      // Auto-save
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      renderTotals();
+      renderAll();
     }
 
-    function fillAllMonth() {
-      const month = prompt('Masukkan bulan (Mei/Juni/Juli/Agustus/September/Oktober/November/Desember):');
-      if (!month || !MONTHS.includes(month)) {
-        alert('Bulan tidak valid!');
-        return;
-      }
+    function fillCurrentMonth() {
+      const month = MONTHS[currentMonthIndex];
+      const amount = parseInt(document.getElementById('quickAmount').value);
       
-      const amount = prompt('Masukkan jumlah iuran (contoh: 50000):');
       if (!amount || isNaN(amount)) {
-        alert('Jumlah tidak valid!');
+        alert('Masukkan jumlah iuran yang valid!');
         return;
       }
       
-      if (!confirm(`Isi semua anggota bulan ${month} sebesar Rp ${Number(amount).toLocaleString('id-ID')}?`)) return;
+      if (!confirm(`Isi semua anggota bulan ${month} sebesar ${formatRp(amount)}?`)) return;
       
       MEMBERS.forEach(name => {
         if (!data[name]) data[name] = {};
-        data[name][month] = parseInt(amount);
+        data[name][month] = amount;
       });
       
-      saveData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       renderAll();
-    }
-
-    function clearAllData() {
-      if (!confirm('⚠️ Yakin mau reset SEMUA data? Data yang sudah dihapus tidak bisa dikembalikan!')) return;
-      if (!confirm('Konfirmasi sekali lagi: HAPUS SEMUA DATA?')) return;
-      
-      MEMBERS.forEach(name => {
-        data[name] = {};
-        MONTHS.forEach(month => {
-          data[name][month] = 0;
-        });
-      });
-      
-      saveData();
-      renderAll();
-    }
-
-    function markAllPaid() {
-      const amount = prompt('Masukkan jumlah iuran per bulan (contoh: 50000):');
-      if (!amount || isNaN(amount)) return;
-      
-      if (!confirm(`Tandai SEMUA anggota LUNAS untuk semua bulan sebesar Rp ${Number(amount).toLocaleString('id-ID')}?`)) return;
-      
-      MEMBERS.forEach(name => {
-        data[name] = {};
-        MONTHS.forEach(month => {
-          data[name][month] = parseInt(amount);
-        });
-      });
-      
-      saveData();
-      renderAll();
+      showToast(`Berhasil isi ${MEMBERS.length} anggota! ✅`);
     }
 
     // ========== EXPORT ==========
     function exportToCSV() {
-      let csv = 'No,Nama,' + MONTHS.join(',') + ',Total,Status\n';
+      let csv = 'No,Nama,' + MONTHS.join(',') + ',Total\n';
       
       MEMBERS.forEach((name, i) => {
-        const memberData = data[name] || {};
         let total = 0;
-        let values = [];
-        
-        MONTHS.forEach(month => {
-          const val = memberData[month] || 0;
+        let values = MONTHS.map(month => {
+          const val = (data[name] && data[name][month]) || 0;
           total += val;
-          values.push(val);
+          return val;
         });
         
-        const paidMonths = MONTHS.filter(m => (memberData[m] || 0) > 0).length;
-        const status = paidMonths === MONTHS.length ? 'Lunas' : (paidMonths > 0 ? `${paidMonths}/${MONTHS.length}` : 'Belum');
-        
-        csv += `${i + 1},${name},${values.join(',')},${total},${status}\n`;
+        csv += `${i + 1},${name},${values.join(',')},${total}\n`;
       });
-      
-      // Add totals
-      let totalRow = ',TOTAL PER BULAN,';
-      MONTHS.forEach(month => {
-        let monthTotal = 0;
-        MEMBERS.forEach(name => {
-          monthTotal += (data[name] && data[name][month]) || 0;
-        });
-        totalRow += monthTotal + ',';
-      });
-      csv += totalRow + '\n';
       
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
@@ -460,13 +446,13 @@
     // ========== TOAST ==========
     function showToast(message) {
       const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 transition-all transform translate-y-0 opacity-100';
+      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
       toast.textContent = message;
       document.body.appendChild(toast);
       
       setTimeout(() => {
-        toast.style.transform = 'translateY(100px)';
         toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
         setTimeout(() => toast.remove(), 300);
       }, 2000);
     }
