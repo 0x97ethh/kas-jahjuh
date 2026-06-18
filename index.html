@@ -6,6 +6,7 @@
   <title>BUKU KAS JAH-JUH</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; background: #0a0a0f; }
@@ -15,6 +16,23 @@
     .btn-primary:hover { background: linear-gradient(135deg, #ff4444, #e50914); }
     .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
     .btn-success:hover { background: linear-gradient(135deg, #16a34a, #22c55e); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .btn-danger:hover { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .input-field { 
+      background: rgba(255,255,255,0.05); 
+      border: 2px solid rgba(255,255,255,0.1); 
+      color: white; 
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 14px;
+      border-radius: 12px;
+    }
+    .input-field:focus { 
+      border-color: #e50914; 
+      outline: none; 
+      box-shadow: 0 0 0 3px rgba(229,9,20,0.2); 
+    }
+    .input-field.has-value { border-color: rgba(34,197,94,0.5); }
     .month-tab { 
       padding: 10px 20px; 
       border-radius: 12px; 
@@ -36,26 +54,6 @@
       background: rgba(34,197,94,0.2); 
       color: #4ade80;
       border-color: rgba(34,197,94,0.3);
-    }
-    .input-amount { 
-      background: rgba(255,255,255,0.05); 
-      border: 2px solid rgba(255,255,255,0.1); 
-      color: white; 
-      text-align: center;
-      padding: 12px 8px;
-      width: 100%;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 12px;
-    }
-    .input-amount:focus { 
-      border-color: #e50914; 
-      outline: none; 
-      box-shadow: 0 0 0 3px rgba(229,9,20,0.2); 
-    }
-    .input-amount.has-value {
-      background: rgba(34,197,94,0.1);
-      border-color: rgba(34,197,94,0.5);
     }
     .member-card { 
       background: rgba(255,255,255,0.03); 
@@ -81,6 +79,40 @@
       background: linear-gradient(90deg, #22c55e, #16a34a);
       transition: width 0.5s ease;
     }
+    .expense-card { 
+      background: rgba(239,68,68,0.05); 
+      border: 1px solid rgba(239,68,68,0.1); 
+      border-radius: 16px; 
+      padding: 16px;
+    }
+    .income-card { 
+      background: rgba(34,197,94,0.05); 
+      border: 1px solid rgba(34,197,94,0.1); 
+      border-radius: 16px; 
+      padding: 16px;
+    }
+    .transaction-item { 
+      background: rgba(255,255,255,0.03); 
+      border: 1px solid rgba(255,255,255,0.05); 
+      border-radius: 12px; 
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .nav-tab { 
+      padding: 12px 24px; 
+      font-weight: 600; 
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: #a0a0a0;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover { color: white; }
+    .nav-tab.active { 
+      color: white;
+      border-color: #e50914;
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1a1a2e; }
     ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 3px; }
@@ -94,7 +126,7 @@
 <body class="text-white min-h-screen">
   <!-- Header -->
   <header class="glass sticky top-0 z-50 border-b border-white/5">
-    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-2xl">📒</span>
         <div>
@@ -103,7 +135,7 @@
         </div>
       </div>
       <div class="flex items-center gap-3 no-print">
-        <select id="yearSelect" class="input-amount rounded-lg px-3 py-1.5 text-sm w-auto" onchange="renderAll()">
+        <select id="yearSelect" class="input-field rounded-lg px-3 py-1.5 text-sm w-auto" onchange="renderAll()">
           <option value="2026">2026</option>
           <option value="2025">2025</option>
         </select>
@@ -114,74 +146,203 @@
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-6">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="glass rounded-2xl p-4 text-center">
-        <div class="text-3xl font-black text-green-400" id="totalKas">Rp 0</div>
-        <div class="text-xs text-zinc-400 mt-1">Total Kas</div>
-      </div>
-      <div class="glass rounded-2xl p-4 text-center">
-        <div class="text-3xl font-black text-blue-400" id="paidCount">0/28</div>
-        <div class="text-xs text-zinc-400 mt-1">Sudah Bayar</div>
-      </div>
-      <div class="glass rounded-2xl p-4 text-center">
-        <div class="text-3xl font-black text-yellow-400" id="progressPct">0%</div>
-        <div class="text-xs text-zinc-400 mt-1">Progress</div>
-      </div>
+  <!-- Navigation Tabs -->
+  <div class="border-b border-white/5 no-print">
+    <div class="max-w-6xl mx-auto px-4 flex gap-2 overflow-x-auto">
+      <div class="nav-tab active" onclick="switchTab('iuran')" id="tab-iuran">💰 Iuran</div>
+      <div class="nav-tab" onclick="switchTab('pengeluaran')" id="tab-pengeluaran">💸 Pengeluaran</div>
+      <div class="nav-tab" onclick="switchTab('laporan')" id="tab-laporan">📊 Laporan</div>
+      <div class="nav-tab" onclick="switchTab('riwayat')" id="tab-riwayat">📋 Riwayat</div>
     </div>
+  </div>
 
-    <!-- Progress Bar -->
-    <div class="glass rounded-full p-1 mb-6">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
-      </div>
-    </div>
-
-    <!-- Month Tabs -->
-    <div class="flex flex-wrap gap-2 mb-6 no-print" id="monthTabs">
-    </div>
-
-    <!-- Current Month Header -->
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold" id="currentMonthTitle">📅 Mei 2026</h2>
-      <div class="flex gap-2 no-print">
-        <button onclick="prevMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">◀</button>
-        <button onclick="nextMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">▶</button>
-      </div>
-    </div>
-
-    <!-- Quick Fill -->
-    <div class="glass rounded-2xl p-4 mb-6 no-print">
-      <div class="flex items-center gap-4">
-        <input type="number" id="quickAmount" placeholder="Masukkan jumlah iuran..." class="input-amount flex-1" value="50000">
-        <button onclick="fillCurrentMonth()" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap">💰 Isi Semua</button>
-      </div>
-    </div>
-
-    <!-- Members Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="membersGrid">
-    </div>
-
-    <!-- Month Summary -->
-    <div class="glass rounded-2xl p-4 mt-6">
-      <h3 class="font-semibold mb-3">📊 Ringkasan Bulan <span id="summaryMonth">Mei</span></h3>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <div class="text-sm text-zinc-400">Total Terkumpul</div>
-          <div class="text-xl font-bold text-green-400" id="monthTotal">Rp 0</div>
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <!-- ==================== TAB IURAN ==================== -->
+    <div class="tab-content active" id="content-iuran">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-green-400" id="totalMasuk">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💰 Total Masuk</div>
         </div>
-        <div>
-          <div class="text-sm text-zinc-400">Sudah Bayar</div>
-          <div class="text-xl font-bold text-blue-400" id="monthPaid">0/28</div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-red-400" id="totalKeluar">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💸 Total Keluar</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-blue-400" id="saldoKas">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💰 Saldo Kas</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-purple-400" id="progressPct">0%</div>
+          <div class="text-xs text-zinc-400 mt-1">📊 Progress</div>
         </div>
       </div>
+
+      <!-- Progress Bar -->
+      <div class="glass rounded-full p-1 mb-6">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Month Tabs -->
+      <div class="flex flex-wrap gap-2 mb-6 no-print" id="monthTabs"></div>
+
+      <!-- Current Month Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold" id="currentMonthTitle">📅 Mei 2026</h2>
+        <div class="flex gap-2 no-print">
+          <button onclick="prevMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">◀</button>
+          <button onclick="nextMonth()" class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">▶</button>
+        </div>
+      </div>
+
+      <!-- Quick Fill -->
+      <div class="glass rounded-2xl p-4 mb-6 no-print">
+        <div class="flex items-center gap-4">
+          <input type="number" id="quickAmount" placeholder="Jumlah iuran..." class="input-field flex-1" value="50000">
+          <button onclick="fillCurrentMonth()" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap">💰 Isi Semua</button>
+        </div>
+      </div>
+
+      <!-- Members Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="membersGrid"></div>
+
+      <!-- Month Summary -->
+      <div class="glass rounded-2xl p-4 mt-6">
+        <h3 class="font-semibold mb-3">📊 Ringkasan Bulan <span id="summaryMonth">Mei</span></h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <div class="text-sm text-zinc-400">Total Terkumpul</div>
+            <div class="text-xl font-bold text-green-400" id="monthTotal">Rp 0</div>
+          </div>
+          <div>
+            <div class="text-sm text-zinc-400">Sudah Bayar</div>
+            <div class="text-xl font-bold text-blue-400" id="monthPaid">0/28</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- All Months Summary -->
-    <div class="glass rounded-2xl p-4 mt-6 no-print">
-      <h3 class="font-semibold mb-3">📈 Ringkasan Semua Bulan</h3>
-      <div class="space-y-3" id="allMonthsSummary">
+    <!-- ==================== TAB PENGELUARAN ==================== -->
+    <div class="tab-content" id="content-pengeluaran">
+      <!-- Add Expense Form -->
+      <div class="glass rounded-2xl p-6 mb-6 no-print">
+        <h3 class="font-semibold mb-4">💸 Tambah Pengeluaran</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-zinc-400 mb-1 block">Tanggal</label>
+            <input type="date" id="expenseDate" class="input-field">
+          </div>
+          <div>
+            <label class="text-sm text-zinc-400 mb-1 block">Jumlah (Rp)</label>
+            <input type="number" id="expenseAmount" placeholder="100000" class="input-field">
+          </div>
+          <div>
+            <label class="text-sm text-zinc-400 mb-1 block">Keterangan</label>
+            <input type="text" id="expenseDesc" placeholder="Beli konsumsi, dekorasi, dll..." class="input-field">
+          </div>
+          <div>
+            <label class="text-sm text-zinc-400 mb-1 block">Kategori</label>
+            <select id="expenseCategory" class="input-field">
+              <option value="konsumsi">🍔 Konsumsi</option>
+              <option value="dekorasi">🎨 Dekorasi</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="kegiatan">🎉 Kegiatan</option>
+              <option value="lainnya">📦 Lainnya</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="addExpense()" class="btn-danger px-6 py-3 rounded-xl font-semibold mt-4">💸 Tambah Pengeluaran</button>
+      </div>
+
+      <!-- Expense Summary -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="expense-card">
+          <div class="text-2xl font-black text-red-400" id="expenseTotal">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">Total Pengeluaran</div>
+        </div>
+        <div class="expense-card">
+          <div class="text-2xl font-black text-yellow-400" id="expenseCount">0</div>
+          <div class="text-xs text-zinc-400 mt-1">Jumlah Transaksi</div>
+        </div>
+        <div class="expense-card">
+          <div class="text-2xl font-black text-orange-400" id="expenseAvg">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">Rata-rata</div>
+        </div>
+        <div class="expense-card">
+          <div class="text-2xl font-black text-purple-400" id="expenseMax">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">Terbesar</div>
+        </div>
+      </div>
+
+      <!-- Expense List -->
+      <div class="glass rounded-2xl p-4">
+        <h3 class="font-semibold mb-4">📋 Daftar Pengeluaran</h3>
+        <div id="expenseList"></div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB LAPORAN ==================== -->
+    <div class="tab-content" id="content-laporan">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div class="income-card">
+          <div class="text-2xl font-black text-green-400" id="reportMasuk">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💰 Total Pemasukan</div>
+        </div>
+        <div class="expense-card">
+          <div class="text-2xl font-black text-red-400" id="reportKeluar">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💸 Total Pengeluaran</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl font-black text-blue-400" id="reportSaldo">Rp 0</div>
+          <div class="text-xs text-zinc-400 mt-1">💰 Saldo Akhir</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="font-semibold mb-4">📈 Grafik Pemasukan vs Pengeluaran</h3>
+        <canvas id="chartReport" height="200"></canvas>
+      </div>
+
+      <!-- Monthly Report -->
+      <div class="glass rounded-2xl p-6">
+        <h3 class="font-semibold mb-4">📊 Rekap Bulanan</h3>
+        <div id="monthlyReport"></div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB RIWAYAT ==================== -->
+    <div class="tab-content" id="content-riwayat">
+      <!-- Filter -->
+      <div class="glass rounded-2xl p-4 mb-6 no-print">
+        <div class="flex items-center gap-4">
+          <select id="historyMonth" class="input-field flex-1" onchange="renderHistory()">
+            <option value="all">Semua Bulan</option>
+            <option value="Mei">Mei</option>
+            <option value="Juni">Juni</option>
+            <option value="Juli">Juli</option>
+            <option value="Agustus">Agustus</option>
+            <option value="September">September</option>
+            <option value="Oktober">Oktober</option>
+            <option value="November">November</option>
+            <option value="Desember">Desember</option>
+          </select>
+          <select id="historyType" class="input-field flex-1" onchange="renderHistory()">
+            <option value="all">Semua Tipe</option>
+            <option value="income">Pemasukan</option>
+            <option value="expense">Pengeluaran</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- History List -->
+      <div class="glass rounded-2xl p-4">
+        <h3 class="font-semibold mb-4">📋 Riwayat Transaksi</h3>
+        <div id="historyList"></div>
       </div>
     </div>
   </main>
@@ -192,9 +353,13 @@
     <p class="mt-1">Data tersimpan di browser • Auto-save aktif</p>
   </footer>
 
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden"></div>
+
   <script>
     // ========== CONFIG ==========
     const STORAGE_KEY = 'buku-kas-jahjuh';
+    const EXPENSE_KEY = 'buku-kas-jahjuh-expenses';
     const MONTHS = ['Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const MEMBERS = [
       'ALI', 'ADE', 'ADIB', 'ADIP', 'AHIS', 'ADNAN', 'ALPIN', 'AMAD',
@@ -205,7 +370,10 @@
 
     // ========== STATE ==========
     let data = {};
+    let expenses = [];
     let currentMonthIndex = 0;
+    let currentTab = 'iuran';
+    let chartInstance = null;
 
     // ========== DATA ==========
     function loadData() {
@@ -220,12 +388,20 @@
             data[name][month] = 0;
           });
         });
-        saveData();
       }
+
+      const savedExpenses = localStorage.getItem(EXPENSE_KEY);
+      if (savedExpenses) {
+        expenses = JSON.parse(savedExpenses);
+      }
+
+      // Set default date
+      document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
     }
 
     function saveData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(EXPENSE_KEY, JSON.stringify(expenses));
       showToast('Data berhasil disimpan! 💾');
     }
 
@@ -235,7 +411,33 @@
       return 'Rp ' + Number(num).toLocaleString('id-ID');
     }
 
-    // ========== RENDER ==========
+    // ========== TOAST ==========
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2000);
+    }
+
+    // ========== TABS ==========
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update nav tabs
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(`content-${tab}`).classList.add('active');
+      
+      // Render specific tab
+      if (tab === 'pengeluaran') renderExpenses();
+      if (tab === 'laporan') renderReport();
+      if (tab === 'riwayat') renderHistory();
+    }
+
+    // ========== MONTH TABS ==========
     function renderMonthTabs() {
       const container = document.getElementById('monthTabs');
       let html = '';
@@ -258,6 +460,7 @@
       container.innerHTML = html;
     }
 
+    // ========== MEMBERS ==========
     function renderMembers() {
       const month = MONTHS[currentMonthIndex];
       const container = document.getElementById('membersGrid');
@@ -273,7 +476,7 @@
             <span class="badge ${hasValue ? 'badge-green' : 'badge-red'}">${hasValue ? '✅' : '❌'}</span>
           </div>
           <input type="number" 
-            class="input-amount ${hasValue ? 'has-value' : ''}" 
+            class="input-field ${hasValue ? 'has-value' : ''}" 
             value="${value || ''}" 
             placeholder="0"
             onchange="updateValue('${name}', this.value)"
@@ -285,18 +488,24 @@
       container.innerHTML = html;
     }
 
+    // ========== STATS ==========
     function renderStats() {
       const month = MONTHS[currentMonthIndex];
-      let totalKas = 0;
-      let paidCount = 0;
+      let totalMasuk = 0;
+      let totalKeluar = 0;
       let monthTotal = 0;
       let monthPaid = 0;
       
-      // All months total
+      // All months income
       MEMBERS.forEach(name => {
         MONTHS.forEach(m => {
-          totalKas += (data[name] && data[name][m]) || 0;
+          totalMasuk += (data[name] && data[name][m]) || 0;
         });
+      });
+      
+      // All expenses
+      expenses.forEach(exp => {
+        totalKeluar += exp.amount;
       });
       
       // Current month
@@ -308,18 +517,19 @@
         }
       });
       
-      // Total paid across all months
-      MEMBERS.forEach(name => {
-        MONTHS.forEach(m => {
-          if ((data[name] && data[name][m]) > 0) paidCount++;
-        });
-      });
-      
+      // Progress
       const totalSlots = MEMBERS.length * MONTHS.length;
-      const progressPct = totalSlots > 0 ? Math.round(paidCount / totalSlots * 100) : 0;
+      const paidSlots = MEMBERS.reduce((sum, name) => {
+        return sum + MONTHS.filter(m => (data[name] && data[name][m]) > 0).length;
+      }, 0);
+      const progressPct = totalSlots > 0 ? Math.round(paidSlots / totalSlots * 100) : 0;
       
-      document.getElementById('totalKas').textContent = formatRp(totalKas);
-      document.getElementById('paidCount').textContent = `${monthPaid}/${MEMBERS.length}`;
+      const saldo = totalMasuk - totalKeluar;
+      
+      document.getElementById('totalMasuk').textContent = formatRp(totalMasuk);
+      document.getElementById('totalKeluar').textContent = formatRp(totalKeluar);
+      document.getElementById('saldoKas').textContent = formatRp(saldo);
+      document.getElementById('saldoKas').className = `text-2xl font-black ${saldo >= 0 ? 'text-blue-400' : 'text-red-400'}`;
       document.getElementById('progressPct').textContent = `${progressPct}%`;
       document.getElementById('progressBar').style.width = `${progressPct}%`;
       
@@ -327,44 +537,6 @@
       document.getElementById('summaryMonth').textContent = month;
       document.getElementById('monthTotal').textContent = formatRp(monthTotal);
       document.getElementById('monthPaid').textContent = `${monthPaid}/${MEMBERS.length}`;
-    }
-
-    function renderAllMonthsSummary() {
-      const container = document.getElementById('allMonthsSummary');
-      let html = '';
-      
-      MONTHS.forEach((month, i) => {
-        let monthTotal = 0;
-        let monthPaid = 0;
-        
-        MEMBERS.forEach(name => {
-          const val = (data[name] && data[name][month]) || 0;
-          if (val > 0) {
-            monthPaid++;
-            monthTotal += val;
-          }
-        });
-        
-        const pct = Math.round(monthPaid / MEMBERS.length * 100);
-        
-        html += `<div class="flex items-center gap-4 p-3 rounded-xl bg-white/3 cursor-pointer hover:bg-white/5" onclick="selectMonth(${i})">
-          <span class="font-semibold w-24">${month}</span>
-          <div class="flex-1 progress-bar">
-            <div class="progress-fill" style="width: ${pct}%"></div>
-          </div>
-          <span class="text-sm text-zinc-400 w-16 text-right">${monthPaid}/${MEMBERS.length}</span>
-          <span class="text-sm font-semibold text-green-400 w-24 text-right">${formatRp(monthTotal)}</span>
-        </div>`;
-      });
-      
-      container.innerHTML = html;
-    }
-
-    function renderAll() {
-      renderMonthTabs();
-      renderMembers();
-      renderStats();
-      renderAllMonthsSummary();
     }
 
     // ========== ACTIONS ==========
@@ -401,7 +573,7 @@
       const amount = parseInt(document.getElementById('quickAmount').value);
       
       if (!amount || isNaN(amount)) {
-        alert('Masukkan jumlah iuran yang valid!');
+        showToast('Masukkan jumlah iuran yang valid!');
         return;
       }
       
@@ -415,6 +587,291 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       renderAll();
       showToast(`Berhasil isi ${MEMBERS.length} anggota! ✅`);
+    }
+
+    // ========== EXPENSES ==========
+    function addExpense() {
+      const date = document.getElementById('expenseDate').value;
+      const amount = parseInt(document.getElementById('expenseAmount').value);
+      const desc = document.getElementById('expenseDesc').value.trim();
+      const category = document.getElementById('expenseCategory').value;
+      
+      if (!date || !amount || !desc) {
+        showToast('Lengkapi semua field!');
+        return;
+      }
+      
+      expenses.push({
+        id: Date.now(),
+        date,
+        amount,
+        description: desc,
+        category,
+        createdAt: new Date().toISOString()
+      });
+      
+      // Sort by date descending
+      expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      localStorage.setItem(EXPENSE_KEY, JSON.stringify(expenses));
+      
+      // Reset form
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('expenseDesc').value = '';
+      
+      renderExpenses();
+      showToast('Pengeluaran berhasil ditambahkan! 💸');
+    }
+
+    function deleteExpense(id) {
+      if (!confirm('Hapus pengeluaran ini?')) return;
+      expenses = expenses.filter(exp => exp.id !== id);
+      localStorage.setItem(EXPENSE_KEY, JSON.stringify(expenses));
+      renderExpenses();
+      showToast('Pengeluaran berhasil dihapus! 🗑️');
+    }
+
+    function renderExpenses() {
+      // Stats
+      let total = 0;
+      let max = 0;
+      expenses.forEach(exp => {
+        total += exp.amount;
+        if (exp.amount > max) max = exp.amount;
+      });
+      
+      document.getElementById('expenseTotal').textContent = formatRp(total);
+      document.getElementById('expenseCount').textContent = expenses.length;
+      document.getElementById('expenseAvg').textContent = expenses.length > 0 ? formatRp(Math.round(total / expenses.length)) : 'Rp 0';
+      document.getElementById('expenseMax').textContent = formatRp(max);
+      
+      // List
+      const container = document.getElementById('expenseList');
+      if (expenses.length === 0) {
+        container.innerHTML = '<p class="text-center text-zinc-500 py-8">Belum ada pengeluaran</p>';
+        return;
+      }
+      
+      const categoryIcons = {
+        konsumsi: '🍔',
+        dekorasi: '🎨',
+        transport: '🚗',
+        kegiatan: '🎉',
+        lainnya: '📦'
+      };
+      
+      let html = '';
+      expenses.forEach(exp => {
+        const icon = categoryIcons[exp.category] || '📦';
+        const date = new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        
+        html += `<div class="transaction-item flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${icon}</span>
+            <div>
+              <div class="font-semibold text-sm">${exp.description}</div>
+              <div class="text-xs text-zinc-400">${date} • ${exp.category}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-red-400">-${formatRp(exp.amount)}</span>
+            <button onclick="deleteExpense(${exp.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+          </div>
+        </div>`;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // ========== REPORT ==========
+    function renderReport() {
+      let totalMasuk = 0;
+      let totalKeluar = 0;
+      
+      // Income
+      MEMBERS.forEach(name => {
+        MONTHS.forEach(m => {
+          totalMasuk += (data[name] && data[name][m]) || 0;
+        });
+      });
+      
+      // Expenses
+      expenses.forEach(exp => {
+        totalKeluar += exp.amount;
+      });
+      
+      const saldo = totalMasuk - totalKeluar;
+      
+      document.getElementById('reportMasuk').textContent = formatRp(totalMasuk);
+      document.getElementById('reportKeluar').textContent = formatRp(totalKeluar);
+      document.getElementById('reportSaldo').textContent = formatRp(saldo);
+      document.getElementById('reportSaldo').className = `text-2xl font-black ${saldo >= 0 ? 'text-blue-400' : 'text-red-400'}`;
+      
+      // Chart
+      renderChart();
+      
+      // Monthly breakdown
+      renderMonthlyReport();
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('chartReport').getContext('2d');
+      
+      if (chartInstance) chartInstance.destroy();
+      
+      const monthlyIncome = MONTHS.map(month => {
+        let total = 0;
+        MEMBERS.forEach(name => {
+          total += (data[name] && data[name][month]) || 0;
+        });
+        return total;
+      });
+      
+      const monthlyExpense = MONTHS.map(month => {
+        // Group expenses by month
+        return expenses.filter(exp => {
+          const expMonth = new Date(exp.date).toLocaleString('id-ID', { month: 'long' });
+          return expMonth === month;
+        }).reduce((sum, exp) => sum + exp.amount, 0);
+      });
+      
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: MONTHS.map(m => m.substring(0, 3)),
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: monthlyIncome,
+              backgroundColor: 'rgba(34, 197, 94, 0.6)',
+              borderColor: 'rgb(34, 197, 94)',
+              borderWidth: 1
+            },
+            {
+              label: 'Pengeluaran',
+              data: monthlyExpense,
+              backgroundColor: 'rgba(239, 68, 68, 0.6)',
+              borderColor: 'rgb(239, 68, 68)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#a0a0a0' } } },
+          scales: {
+            x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#a0a0a0', callback: v => 'Rp ' + v.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderMonthlyReport() {
+      const container = document.getElementById('monthlyReport');
+      let html = '';
+      
+      MONTHS.forEach(month => {
+        let income = 0;
+        MEMBERS.forEach(name => {
+          income += (data[name] && data[name][month]) || 0;
+        });
+        
+        const expense = expenses.filter(exp => {
+          const expMonth = new Date(exp.date).toLocaleString('id-ID', { month: 'long' });
+          return expMonth === month;
+        }).reduce((sum, exp) => sum + exp.amount, 0);
+        
+        const balance = income - expense;
+        
+        if (income > 0 || expense > 0) {
+          html += `<div class="flex items-center justify-between p-3 rounded-xl bg-white/3 mb-2">
+            <span class="font-semibold">${month}</span>
+            <div class="flex gap-6 text-sm">
+              <span class="text-green-400">+${formatRp(income)}</span>
+              <span class="text-red-400">-${formatRp(expense)}</span>
+              <span class="font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatRp(balance)}</span>
+            </div>
+          </div>`;
+        }
+      });
+      
+      container.innerHTML = html || '<p class="text-center text-zinc-500 py-4">Belum ada data transaksi</p>';
+    }
+
+    // ========== HISTORY ==========
+    function renderHistory() {
+      const monthFilter = document.getElementById('historyMonth').value;
+      const typeFilter = document.getElementById('historyType').value;
+      
+      let transactions = [];
+      
+      // Add income transactions
+      if (typeFilter === 'all' || typeFilter === 'income') {
+        MEMBERS.forEach(name => {
+          MONTHS.forEach(month => {
+            const amount = (data[name] && data[name][month]) || 0;
+            if (amount > 0) {
+              if (monthFilter === 'all' || monthFilter === month) {
+                transactions.push({
+                  type: 'income',
+                  date: month,
+                  name,
+                  amount,
+                  description: `Iuran ${month}`,
+                  icon: '💰'
+                });
+              }
+            }
+          });
+        });
+      }
+      
+      // Add expense transactions
+      if (typeFilter === 'all' || typeFilter === 'expense') {
+        expenses.forEach(exp => {
+          const expMonth = new Date(exp.date).toLocaleString('id-ID', { month: 'long' });
+          if (monthFilter === 'all' || monthFilter === expMonth) {
+            transactions.push({
+              type: 'expense',
+              date: exp.date,
+              name: exp.category,
+              amount: exp.amount,
+              description: exp.description,
+              icon: '💸'
+            });
+          }
+        });
+      }
+      
+      const container = document.getElementById('historyList');
+      if (transactions.length === 0) {
+        container.innerHTML = '<p class="text-center text-zinc-500 py-8">Tidak ada transaksi</p>';
+        return;
+      }
+      
+      let html = '';
+      transactions.forEach(trans => {
+        const isIncome = trans.type === 'income';
+        const dateStr = typeof trans.date === 'string' && trans.date.length > 5 
+          ? new Date(trans.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+          : trans.date;
+        
+        html += `<div class="transaction-item flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${trans.icon}</span>
+            <div>
+              <div class="font-semibold text-sm">${trans.description}</div>
+              <div class="text-xs text-zinc-400">${dateStr} • ${trans.name}</div>
+            </div>
+          </div>
+          <span class="font-bold ${isIncome ? 'text-green-400' : 'text-red-400'}">
+            ${isIncome ? '+' : '-'}${formatRp(trans.amount)}
+          </span>
+        </div>`;
+      });
+      
+      container.innerHTML = html;
     }
 
     // ========== EXPORT ==========
@@ -432,6 +889,12 @@
         csv += `${i + 1},${name},${values.join(',')},${total}\n`;
       });
       
+      // Add expenses
+      csv += '\n\nPENGELUARAN\nTanggal,Kategori,Keterangan,Jumlah\n';
+      expenses.forEach(exp => {
+        csv += `${exp.date},${exp.category},"${exp.description}",${exp.amount}\n`;
+      });
+      
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -443,18 +906,15 @@
       showToast('File CSV berhasil didownload! 📥');
     }
 
-    // ========== TOAST ==========
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
-      toast.textContent = message;
-      document.body.appendChild(toast);
+    // ========== RENDER ALL ==========
+    function renderAll() {
+      renderMonthTabs();
+      renderMembers();
+      renderStats();
       
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-      }, 2000);
+      if (currentTab === 'pengeluaran') renderExpenses();
+      if (currentTab === 'laporan') renderReport();
+      if (currentTab === 'riwayat') renderHistory();
     }
 
     // ========== INIT ==========
@@ -464,6 +924,7 @@
     // Auto-save every 30 seconds
     setInterval(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(EXPENSE_KEY, JSON.stringify(expenses));
     }, 30000);
   </script>
 </body>
